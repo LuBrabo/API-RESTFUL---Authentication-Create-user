@@ -1,86 +1,80 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+require('dotenv').config()
+const express = require('express')
+const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const moment = require('moment-timezone')
 
-const app = express();
+const app = express()
 
-//Conection of database with hosting
-
-const mongoURI = process.env.MONGODB_URI;
-
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const timeZone = 'America/Sao_Paulo'
 
 
 // Config JSON response
-app.use(express.json());
+app.use(express.json())
 
 // Models
-const User = require('./models/User');
+const User = require('./models/User')
 
 // Open Route
 app.get('/', (req, res) => {
-  res.status(200).json({ msg: 'API RESTFUL desafio tecnico!' });
-});
+  res.status(200).json({ msg: 'API RESTFUL desafio tecnico!' })
+})
 
 // Close Route
 app.get('/user/:id', checkToken, async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.id
 
   // Check if user exists
   try {
-    const user = await User.findById(id, '-password');
+    const user = await User.findById(id, '-password -createdAt -updatedAt');
     if (!user) {
       return res.status(404).json({ mensagem: 'Usuário não encontrado' });
     }
 
-    res.status(200).json({ user });
+    res.status(200).json({ user })
   } catch (error) {
-    console.error(error);
+    console.error(error)
     res.status(500).json({ mensagem: 'Erro ao buscar o usuário' });
   }
-});
+})
 
 function checkToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
 
   if (!token) {
-    return res.status(401).json({ mensagem: 'Não autorizado' });
+    return res.status(401).json({ mensagem: 'Não autorizado' })
   }
 
   try {
-    const secret = process.env.SECRET;
-    jwt.verify(token, secret);
-    next();
+    const secret = process.env.SECRET
+    jwt.verify(token, secret)
+    next()
   } catch (error) {
-    res.status(401).json({ mensagem: 'Token inválido!' });
+    res.status(401).json({ mensagem: 'Token inválido!' })
   }
 }
 
 // Register User
 app.post('/auth/register', async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone } = req.body
 
   // Validations
   if (!name || !email || !password || !phone || !phone.ddd || !phone.numero) {
-    return res.json({ mensagem: 'Todos os campos são obrigatórios' });
+    return res.json({ mensagem: 'Todos os campos são obrigatórios' })
   }
 
   // Check if user exists
   try {
-    const userExists = await User.findOne({ email: email });
+    const userExists = await User.findOne({ email: email })
     if (userExists) {
-      return res.json({ mensagem: 'E-mail já existente' });
+      return res.json({ mensagem: 'E-mail já existente' })
     }
 
     // Create hash password
-    const salt = await bcrypt.genSalt(12);
-    const passwordHash = await bcrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(12)
+    const passwordHash = await bcrypt.hash(password, salt)
 
     // Create user
     const user = new User({
@@ -91,7 +85,7 @@ app.post('/auth/register', async (req, res) => {
         ddd: phone.ddd,
         numero: phone.numero,
       },
-    });
+    })
 
     user.lastlogin = new Date();
     await user.save();
@@ -105,13 +99,13 @@ app.post('/auth/register', async (req, res) => {
       {
         expiresIn: '30m',
       }
-    );
+    )
 
     const responseData = {
       id: user._id,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      lastLogin: user.lastlogin,
+      data_criacao: moment(user.createdAt).tz(timeZone).format(),
+      data_atualizacao: moment(user.updatedAt).tz(timeZone).format(),
+      ultimo_login: moment(user.lastlogin).tz(timeZone).format(),
       token: token,
       mensagem: 'Usuário criado com sucesso',
     };
@@ -154,19 +148,21 @@ app.post('/auth/login', async (req, res) => {
       {
         expiresIn: '30m',
       }
-    );
-
+    )
+    
+    // Update last login date
+    user.lastlogin = new Date()
+    
+    
     const responseData = {
       id: user._id,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      lastLogin: user.lastlogin,
+      data_criacao: moment(user.createdAt).tz(timeZone).format(),
+      data_atualizacao: moment(user.updatedAt).tz(timeZone).format(),
+      ultimo_login: moment(user.lastlogin).tz(timeZone).format(),
       token: token,
       mensagem: 'Autenticação realizada com sucesso',
-    };
-
-    // Update last login date
-    user.lastlogin = new Date();
+    }
+    
     await user.save();
 
     res.status(200).json(responseData);
