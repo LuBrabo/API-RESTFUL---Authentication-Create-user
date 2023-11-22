@@ -170,13 +170,15 @@ app.post('/auth/login', async (req, res) => {
     console.error(error);
     res.status(500).json({ mensagem: 'Erro na autenticação' });
   }
-});
+})
 
 // Credentials
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASS;
+
 console.log(dbUser)
 console.log(dbPassword)
+
 mongoose
   .connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.vflvxzh.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
