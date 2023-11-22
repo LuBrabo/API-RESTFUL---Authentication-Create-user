@@ -186,6 +186,6 @@ mongoose
       console.log(`Servidor ouvindo na porta ${PORT}`);
     });
   })
-  .catch((err) => console.log('Usuário e/ou senha inválidos'));
+  .catch((err) => console.log('Erro ao conectar ao servidor'));
 
 module.exports = app;
