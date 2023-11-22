@@ -6,6 +6,16 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 
+//Conection of database with hosting
+
+const mongoURI = process.env.MONGODB_URI;
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+
 // Config JSON response
 app.use(express.json());
 
