@@ -178,7 +178,7 @@ const dbPassword = process.env.DB_PASS;
 console.log(dbUser)
 console.log(dbPassword)
 mongoose
-  .connect(`mongodb+srv://${dbUser}:${dbPassword}@apitest-bc4fb539.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=apitest`)
+  .connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.vflvxzh.mongodb.net/?retryWrites=true&w=majority`)
   .then(() => {
     const PORT = process.env.PORT || 3000;
 
