@@ -8,6 +8,7 @@ const expect = chai.expect;
 describe('User API', () => {
     let authToken; // Variável para armazenar o token
 
+    console.log("Aqui")
     before(async () => {
       // Autentica um usuário e obtém um token
       const res = await chai
