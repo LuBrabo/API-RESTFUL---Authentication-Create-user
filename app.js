@@ -101,6 +101,7 @@ app.post('/auth/register', async (req, res) => {
       }
     )
 
+
     const responseData = {
       id: user._id,
       data_criacao: moment(user.createdAt).tz(timeZone).format(),
