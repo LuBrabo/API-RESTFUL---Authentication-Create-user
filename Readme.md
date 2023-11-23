@@ -16,3 +16,7 @@ A hospedagem foi feita no Heroku e pode ser acessado no link https://salty-spire
 <p>
 Para fazer a criação do usuário deve inserir (nome, email, senha e telefone) sendo que no telefone você deverá inserir o ddd e o numero de telefone separado, após efetuar a criação pode fazer o login no qual ele retornará o (id, data de criação, data de atualização, data do último login e o token). Em seguida na close route que deve ser acessada com o id do usuário, ele irá retornar as informações do próprio usuário.
 </p>
+
+<p aling="center">
+Adicionei as configurações do postman aqui no repositório para facilidade e melhor vizualização. Vou deixar aqui também o connect do servidor que está habilitado apenas para leitura mongodb+srv://convidados:tPHNF9wB4ystCPMx@cluster0.vflvxzh.mongodb.net/?retryWrites=true&w=majority
+</p>
